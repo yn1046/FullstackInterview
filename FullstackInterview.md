@@ -149,3 +149,18 @@ SELECT P.Name AS 'Product Name', C.Name AS 'Category Name' FROM Products P
 LEFT JOIN ProductCategories CP ON CP.ProductId = P.Id
 LEFT JOIN Categories C ON CP.CategoryId = C.Id
 ```
+
+Получаем следующую выборку:
+
+--------------------------------
+| Product Name | Category Name |
+| ------------ | ------------- |
+| Банан        | Еда           |
+| Банан        | Фрукт         |
+| Апельсин     | Еда           |
+| Апельсин     | Фрукт         |
+| Хлеб         | Еда           |
+| Огнемёт      | (null)        |
+--------------------------------
+
+Для выполнения запросов была использована БД MySql 5.6
