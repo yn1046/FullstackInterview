@@ -90,3 +90,62 @@ Wall включает в себя набор записей, единичную 
 Собственно, задача: https://github.com/yn1046/Shapes
 
 Также нестыдно показать это (сервис-имитация фондовых бирж): https://github.com/yn1046/ExchangeApi
+
+## _Вопрос 9_
+>В базе данных MS SQL Server есть продукты и категории. Одному продукту может
+>соответствовать много категорий, в одной категории может быть много продуктов.
+>Напишите SQL запрос для выбора всех пар «Имя продукта – Имя категории». Если у продукта
+>нет категорий, то его имя все равно должно выводиться.
+
+Это отношение "N к N", так что в целях нормализации добавим таблицу, соединяющую продукты и категории.
+Итого имеем три таблицы: Products, Categories, ProductCategories.
+
+```sql
+CREATE TABLE Products (
+  Id int PRIMARY KEY,
+  Name nvarchar(50) NOT NULL,
+  Price int NOT NULL
+);
+
+CREATE TABLE Categories (
+  Id int PRIMARY KEY,
+  Name nvarchar(50) NOT NULL
+);
+
+CREATE TABLE ProductCategories (
+  Id int PRIMARY KEY,
+  ProductId int NOT NULL,
+  CategoryId int NOT NULL,
+  FOREIGN KEY (ProductId) REFERENCES Products(Id),
+  FOREIGN KEY (CategoryId) REFERENCES Categories(Id)
+);
+```
+
+Заполним данными:
+
+```sql
+INSERT INTO Products VALUES
+(1, 'Банан', 35),
+(2, 'Апельсин', 50),
+(3, 'Хлеб', 20),
+(4, 'Огнемёт', 1500);
+
+INSERT INTO Categories VALUES
+(1, 'Еда'),
+(2, 'Фрукт');
+
+INSERT INTO ProductCategories VALUES
+(1,1, 1),
+(2,1,2),
+(3,2,1),
+(4,2,2),
+(5,3,1)
+```
+
+Теперь напишем запрос. Чтобы из одной таблицы были выбраны все записи вне зависимости от наличия соответствия в другой, используется Left outer join:
+
+```sql
+SELECT P.Name AS 'Product Name', C.Name AS 'Category Name' FROM Products P
+LEFT JOIN ProductCategories CP ON CP.ProductId = P.Id
+LEFT JOIN Categories C ON CP.CategoryId = C.Id
+```
